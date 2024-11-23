@@ -1,17 +1,29 @@
-from flask import Flask, render_template, jsonify, request
+import os
+from flask import Flask, render_template, jsonify, request, send_from_directory
 from flask_pymongo import PyMongo
 from bson.objectid import ObjectId
 
-app = Flask(__name__)
+# Set up Flask app to use the current directory for templates and static files
+app = Flask(__name__, template_folder=os.getcwd())  # Specify the current directory as template folder
 
 # MongoDB Configuration
 app.config["MONGO_URI"] = "mongodb://localhost:27017/todoDB"
 mongo = PyMongo(app)
 
+# Route to serve static CSS files (styles.css)
+@app.route('/styles.css')
+def serve_styles():
+    return send_from_directory(os.getcwd(), 'styles.css')
+
+# Route to serve static JS files (app.js)
+@app.route('/app.js')
+def serve_app_js():
+    return send_from_directory(os.getcwd(), 'app.js')
+
 # Route to serve the homepage (index.html)
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html')  # Flask will now look for index.html in the root directory
 
 # Add Task
 @app.route('/add_task', methods=['POST'])
